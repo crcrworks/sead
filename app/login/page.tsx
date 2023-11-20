@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { toast, useToast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
 import { FaArrowRight } from 'react-icons/fa'

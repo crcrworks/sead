@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
+import { FaArrowLeft } from 'react-icons/fa6'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
