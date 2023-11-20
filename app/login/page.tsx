@@ -4,10 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
+import { toast, useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6'
+import { FaArrowRight } from 'react-icons/fa'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,6 +22,7 @@ import {
 
 import supabase from '@/lib/utils/supabase'
 import { useEffect } from 'react'
+import { ToastAction } from '@/components/ui/toast'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -41,13 +42,26 @@ const ProfileCard = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password
       })
-      toast({
-        description: 'Account has been created Successflly'
-      })
+
+      if (error?.name === 'AuthApiError') {
+        toast({
+          title: 'Invalid Account',
+          action: (
+            <ToastAction
+              altText="SignUp"
+              onClick={() => {
+                router.push('/register')
+              }}
+            >
+              SignUp
+            </ToastAction>
+          )
+        })
+      }
     } catch (error) {
       toast({
         description: 'error occurred'
@@ -63,7 +77,7 @@ const ProfileCard = () => {
 
   return (
     <div className=" flex w-96 flex-col space-y-5 rounded-lg  p-10">
-      <p className="text-4xl font-bold">Sign Up</p>
+      <p className="text-4xl font-bold">Login</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <FormField
@@ -117,17 +131,17 @@ const ProfileCard = () => {
       <Button
         variant={'link'}
         onClick={() => {
-          router.push('/login')
+          router.push('/register')
         }}
       >
-        <FaArrowLeft className="mr-2" />
-        Login
+        Sign up
+        <FaArrowRight className="ml-2" />
       </Button>
     </div>
   )
 }
 
-const Register = () => {
+const Login = () => {
   const router = useRouter()
   useEffect(() => {
     supabase.auth.getSession().then(sessionData => {
@@ -143,4 +157,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default Login
