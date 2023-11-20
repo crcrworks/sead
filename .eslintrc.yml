@@ -23,7 +23,7 @@ rules:
     - error
     - never
   no-console: warn
-  default-case: error
+  default-case: off
   func-names: off
   react/jsx-uses-react: off
   react/react-in-jsx-scope: off
