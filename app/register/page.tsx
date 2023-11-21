@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
 import { FaArrowLeft } from 'react-icons/fa6'
+import { LuLoader2 } from 'react-icons/lu'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,51 +22,80 @@ import {
 } from '@/components/ui/form'
 
 import supabase from '@/lib/utils/supabase'
-import { useEffect } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
+  confirmPassword: z.string()
 })
 
 const ProfileCard = () => {
   const { toast } = useToast()
   const router = useRouter()
+
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: ''
+      password: '',
+      confirmPassword: ''
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await supabase.auth.signUp({
-        email: values.email,
-        password: values.password
-      })
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value)
+  }
+
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setConfirmPassword(e.target.value)
+  }
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (password !== confirmPassword) return
+    setIsLoading(true)
+    const { data, error } = await supabase.auth.signUp({
+      email: values.email,
+      password: password,
+      options: {
+        emailRedirectTo: '/home'
+      }
+    })
+    setIsLoading(false)
+
+    if (error) {
       toast({
-        description: 'Account has been created Successflly'
+        description: error.message
       })
-    } catch (error) {
+    } else {
       toast({
-        description: 'error occurred'
+        title: 'Account has been created successflly',
+        description: 'Please confirm your email'
       })
     }
   }
 
-  const onClickGoogle = () => {
+  const handleClickGoogle = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google'
     })
   }
 
+  const PasswordMismatch = () => {
+    if (password !== confirmPassword && confirmPassword !== '') {
+      return <FormMessage>passwords mismatch</FormMessage>
+    }
+  }
+
   return (
     <div className=" flex w-96 flex-col space-y-5 rounded-lg  p-10">
-      <p className="text-4xl font-bold">Sign Up</p>
+      <p className="text-4xl font-bold">Create Account</p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
           <FormField
             control={form.control}
             name="email"
@@ -92,10 +122,12 @@ const ProfileCard = () => {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
+                    {...field}
                     type="password"
                     placeholder="********"
-                    {...field}
                     className="border-black border-opacity-50 focus:border-opacity-100"
+                    value={password}
+                    onChange={handlePasswordChange}
                   />
                 </FormControl>
                 <FormMessage />
@@ -103,14 +135,42 @@ const ProfileCard = () => {
             )}
           />
 
-          <Button type="submit" variant="default">
-            Submit
-          </Button>
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="********"
+                    className="border-black border-opacity-50 focus:border-opacity-100"
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                  />
+                </FormControl>
+                <PasswordMismatch />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {isLoading ? (
+            <Button type="submit" variant="default" disabled>
+              <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting
+            </Button>
+          ) : (
+            <Button type="submit" variant="default">
+              Submit
+            </Button>
+          )}
         </form>
       </Form>
 
       <hr className="h-[1px] w-full bg-black opacity-30" />
-      <Button variant="secondary" className="hover:opacity-80" onClick={onClickGoogle}>
+      <Button variant="secondary" className="hover:opacity-80" onClick={handleClickGoogle}>
         <FaGoogle className="mr-2" />
         Connect Google
       </Button>

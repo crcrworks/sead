@@ -52,12 +52,12 @@ const ProfileCard = () => {
           title: 'Invalid Account',
           action: (
             <ToastAction
-              altText="SignUp"
+              altText="Create Account"
               onClick={() => {
                 router.push('/register')
               }}
             >
-              SignUp
+              Create Account
             </ToastAction>
           )
         })
@@ -134,7 +134,7 @@ const ProfileCard = () => {
           router.push('/register')
         }}
       >
-        Sign up
+        Create Account
         <FaArrowRight className="ml-2" />
       </Button>
     </div>
