@@ -64,7 +64,7 @@ const ProfileCard = () => {
       email: values.email,
       password: password,
       options: {
-        emailRedirectTo: 'https://sead-edu.vercel.app/home'
+        emailRedirectTo: getURL()
       }
     })
     setIsLoading(false)

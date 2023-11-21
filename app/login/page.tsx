@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
 import { FaArrowRight } from 'react-icons/fa'
+import { LuLoader2 } from 'react-icons/lu'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,6 +35,9 @@ const formSchema = z.object({
 const ProfileCard = () => {
   const { toast } = useToast()
   const router = useRouter()
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,10 +48,13 @@ const ProfileCard = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setIsLoading(true)
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password
       })
+
+      setIsLoading(false)
 
       if (error?.name === 'AuthApiError') {
         toast({
@@ -65,6 +72,7 @@ const ProfileCard = () => {
         })
       }
     } catch (error) {
+      setIsLoading(false)
       toast({
         description: 'error occurred'
       })
@@ -122,9 +130,16 @@ const ProfileCard = () => {
             )}
           />
 
-          <Button type="submit" variant="default">
-            Submit
-          </Button>
+          {isLoading ? (
+            <Button type="submit" variant="default" disabled>
+              <LuLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting
+            </Button>
+          ) : (
+            <Button type="submit" variant="default">
+              Submit
+            </Button>
+          )}
         </form>
       </Form>
 
