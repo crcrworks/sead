@@ -1,51 +1,79 @@
 'use client'
 
-import { ReactNode, createContext, useState, useContext, useEffect } from 'react'
 import supabase from '@/lib/utils/supabase'
-import { useRouter, usePathname } from 'next/navigation'
-import { AuthChangeEvent, Session, User } from '@supabase/supabase-js'
+import {
+  ReactNode,
+  useContext,
+  createContext,
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction
+} from 'react'
+import { Session } from '@supabase/supabase-js'
 
-export type UserType = { id: string; email: string } | null
-
-export type AuthContextProps = {
-  user: User | null
+type AuthCtx = {
+  session: Session | null
+  loading: boolean
+  setLoading: Dispatch<SetStateAction<boolean>>
+  login: ({ email, password }: { email: string; password: string }) => Promise<void>
+  signup: ({ email, password }: { email: string; password: string }) => Promise<void>
+  logout: () => Promise<void>
 }
+const AuthContext = createContext<AuthCtx | null>(null)
+const useAuth = () => useContext(AuthContext)
 
-export type AuthProps = {
-  children: ReactNode
-}
+const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const auth = supabase.auth
 
-const AuthContext = createContext<Partial<AuthContextProps>>({})
-
-export const useAuthContext = () => {
-  return useContext(AuthContext)
-}
-
-const AuthProvider = ({ children }: AuthProps) => {
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const [user, setUser] = useState<User | null>(null)
-  const isAvailableForViewing = pathname === '/' || pathname === '/login' || pathname === '/signup'
-  const value = {
-    user
-  }
+  const [loading, setLoading] = useState<boolean>(true)
+  const [session, setSession] = useState<Session | null>(null)
 
   useEffect(() => {
-    const authStateChanged = (event: AuthChangeEvent, session: Session | null) => {
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      !currentUser && !isAvailableForViewing && router.push('/login')
-    }
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(authStateChanged)
-
+    let mounted = true
+    ;(async () => {
+      const { data: session } = await auth.getSession()
+      if (mounted) {
+        if (session) {
+          setSession(session.session)
+        }
+        setLoading(false)
+      }
+    })()
+    const { data: subscription } = auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      if (_event === 'SIGNED_OUT') {
+        setSession(null)
+      }
+    })
     return () => {
-      authListener?.subscription?.unsubscribe()
+      mounted = false
+      subscription?.subscription.unsubscribe()
     }
   }, [])
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  const login = async ({ email, password }: { email: string; password: string }) => {
+    await auth.signInWithPassword({ email, password })
+  }
+
+  const signup = async ({ email, password }: { email: string; password: string }) => {
+    await auth.signUp({ email, password })
+  }
+
+  const logout = async () => {
+    await auth.signOut()
+  }
+
+  const exposed: AuthCtx = {
+    session,
+    loading,
+    setLoading,
+    signup,
+    login,
+    logout
+  }
+
+  return <AuthContext.Provider value={exposed}>{!loading && children}</AuthContext.Provider>
 }
 
-export default AuthProvider
+export { useAuth, AuthProvider }

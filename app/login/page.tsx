@@ -63,7 +63,7 @@ const ProfileCard = () => {
             <ToastAction
               altText="Create Account"
               onClick={() => {
-                router.push('/register')
+                router.push('/signup')
               }}
             >
               Create Account
@@ -151,7 +151,7 @@ const ProfileCard = () => {
       <Button
         variant={'link'}
         onClick={() => {
-          router.push('/register')
+          router.push('/signup')
         }}
       >
         Create Account
