@@ -16,9 +16,6 @@ type AuthCtx = {
   session: Session | null
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
-  login: ({ email, password }: { email: string; password: string }) => Promise<void>
-  signup: ({ email, password }: { email: string; password: string }) => Promise<void>
-  logout: () => Promise<void>
 }
 const AuthContext = createContext<AuthCtx | null>(null)
 const useAuth = () => useContext(AuthContext)
@@ -31,15 +28,15 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let mounted = true
-    ;(async () => {
-      const { data: session } = await auth.getSession()
-      if (mounted) {
-        if (session) {
-          setSession(session.session)
+      ; (async () => {
+        const { data: session } = await auth.getSession()
+        if (mounted) {
+          if (session) {
+            setSession(session.session)
+          }
+          setLoading(false)
         }
-        setLoading(false)
-      }
-    })()
+      })()
     const { data: subscription } = auth.onAuthStateChange((_event, session) => {
       setSession(session)
       if (_event === 'SIGNED_OUT') {
@@ -52,25 +49,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
-  const login = async ({ email, password }: { email: string; password: string }) => {
-    await auth.signInWithPassword({ email, password })
-  }
-
-  const signup = async ({ email, password }: { email: string; password: string }) => {
-    await auth.signUp({ email, password })
-  }
-
-  const logout = async () => {
-    await auth.signOut()
-  }
-
   const exposed: AuthCtx = {
     session,
     loading,
-    setLoading,
-    signup,
-    login,
-    logout
+    setLoading
   }
 
   return <AuthContext.Provider value={exposed}>{!loading && children}</AuthContext.Provider>

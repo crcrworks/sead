@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 import Providers from '@/components/providers'
+import Header from '@/components/header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,7 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="light">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="flex flex-col">
+            <Header />
+            <div>{children}</div>
+          </div>
+        </Providers>
         <Toaster />
       </body>
     </html>
