@@ -1,4 +1,6 @@
 'use client'
+
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -22,7 +24,7 @@ import {
 } from '@/components/ui/form'
 
 import supabase from '@/lib/utils/supabase'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { getURL } from 'next/dist/shared/lib/utils'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -83,7 +85,7 @@ const ProfileCard = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://sead-edu.vercel.app/home'
+        redirectTo: getURL()
       }
     })
   }

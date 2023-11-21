@@ -1,4 +1,6 @@
 'use client'
+
+import { useEffect } from 'react'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -19,10 +21,10 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
+import { ToastAction } from '@/components/ui/toast'
 
 import supabase from '@/lib/utils/supabase'
-import { useEffect } from 'react'
-import { ToastAction } from '@/components/ui/toast'
+import { getURL } from 'next/dist/shared/lib/utils'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -73,7 +75,7 @@ const ProfileCard = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://sead-edu.vercel.app/home'
+        redirectTo: getURL()
       }
     })
   }
