@@ -71,7 +71,10 @@ const ProfileCard = () => {
 
   const onClickGoogle = () => {
     supabase.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      options: {
+        redirectTo: '/home'
+      }
     })
   }
 
