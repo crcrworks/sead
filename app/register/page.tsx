@@ -62,7 +62,7 @@ const ProfileCard = () => {
       email: values.email,
       password: password,
       options: {
-        emailRedirectTo: '/home'
+        emailRedirectTo: 'https://sead-edu.vercel.app/home'
       }
     })
     setIsLoading(false)
@@ -83,7 +83,7 @@ const ProfileCard = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: '/home'
+        redirectTo: 'https://sead-edu.vercel.app/home'
       }
     })
   }
