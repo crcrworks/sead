@@ -1,3 +1,4 @@
+'use client'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -12,8 +13,8 @@ import { LuBell } from 'react-icons/lu'
 export const Notification = () => {
   return (
     <Popover>
-      <PopoverTrigger>
-        <Button variant="ghost" className="hover:bg-yellow">
+      <PopoverTrigger asChild>
+        <Button variant="ghost">
           <LuBell className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
