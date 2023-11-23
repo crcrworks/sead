@@ -5,6 +5,7 @@ import { LuAlignJustify } from 'react-icons/lu'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
+  DropdownMenuLabel,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -34,12 +35,14 @@ export const Dropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="hover:bg-yellow">
+        <Button variant="ghost">
           <LuAlignJustify className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 w-56 bg-white">
-        <p className="m-1 text-sm opacity-60">{user?.email}</p>
+        <DropdownMenuLabel>
+          <p className="m-2 text-sm opacity-60">{user?.email}</p>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={handleSettings}>
