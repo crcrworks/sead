@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
 import Providers from '@/components/providers'
-import Header from '@/components/header'
+import Header from '@/features/header/index'
 
 const inter = Inter({ subsets: ['latin'] })
 

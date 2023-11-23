@@ -2,8 +2,6 @@
 
 import supabase from '@/lib/utils/supabase'
 
-import { Button } from '@/components/ui/button'
-
 import { useToast } from '@/components/ui/use-toast'
 
 const Home = () => {

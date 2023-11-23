@@ -1,12 +1,17 @@
-import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
-import { useAuth } from '@/components/auth-provider'
+
+import { useAtom } from 'jotai'
+import { useRouter } from 'next/navigation'
+
+import { authIsLoadingAtom, authSessionAtom } from '@/atoms/auth'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session, loading } = useAuth()!
+  const [session] = useAtom(authSessionAtom)
+  const [loading] = useAtom(authIsLoadingAtom)
+
   const router = useRouter()
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (!session && !loading) {
         router.push('/login')
         return

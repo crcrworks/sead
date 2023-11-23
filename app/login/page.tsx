@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
 import { FaArrowRight } from 'react-icons/fa'
@@ -22,10 +21,9 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
-import { ToastAction } from '@/components/ui/toast'
 
 import supabase from '@/lib/utils/supabase'
-import { getURL } from 'next/dist/shared/lib/utils'
+import { useAuth } from '@/hooks/useAuth'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -33,10 +31,8 @@ const formSchema = z.object({
 })
 
 const ProfileCard = () => {
-  const { toast } = useToast()
   const router = useRouter()
-
-  const [isLoading, setIsLoading] = useState(false)
+  const { loginWithPassword, signInWithOauth, isLoading } = useAuth()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,45 +43,13 @@ const ProfileCard = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      })
-
-      setIsLoading(false)
-
-      if (error?.name === 'AuthApiError') {
-        toast({
-          title: 'Invalid Account',
-          action: (
-            <ToastAction
-              altText="Create Account"
-              onClick={() => {
-                router.push('/signup')
-              }}
-            >
-              Create Account
-            </ToastAction>
-          )
-        })
-      }
-    } catch (error) {
-      setIsLoading(false)
-      toast({
-        description: 'error occurred'
-      })
-    }
+    const email = values.email
+    const password = values.password
+    await loginWithPassword({ email, password })
   }
 
-  const onClickGoogle = () => {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: getURL()
-      }
-    })
+  const onClickGoogle = async () => {
+    await signInWithOauth('google')
   }
 
   return (

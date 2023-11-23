@@ -1,30 +1,33 @@
 'use client'
 
-import supabase from '@/lib/utils/supabase'
 import {
   ReactNode,
-  useContext,
-  createContext,
-  useEffect,
-  useState,
-  Dispatch,
-  SetStateAction
+  // useContext,
+  // createContext,
+  useEffect
+  // Dispatch,
+  // SetStateAction
 } from 'react'
-import { Session } from '@supabase/supabase-js'
+import { useAtom } from 'jotai'
 
-type AuthCtx = {
-  session: Session | null
-  loading: boolean
-  setLoading: Dispatch<SetStateAction<boolean>>
-}
-const AuthContext = createContext<AuthCtx | null>(null)
-const useAuth = () => useContext(AuthContext)
+import supabase from '@/lib/utils/supabase'
+
+import { authIsLoadingAtom, authSessionAtom, authUserDataAtom } from '@/atoms/auth'
+
+// type AuthCtx = {
+//   session: Session | null
+//   loading: boolean
+//   setLoading: Dispatch<SetStateAction<boolean>>
+// }
+// const AuthContext = createContext<AuthCtx | null>(null)
+// const useAuth = () => useContext(AuthContext)
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const auth = supabase.auth
 
-  const [loading, setLoading] = useState<boolean>(true)
-  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useAtom(authIsLoadingAtom)
+  const [session, setSession] = useAtom(authSessionAtom)
+  const [userData, setUserData] = useAtom(authUserDataAtom)
 
   useEffect(() => {
     let mounted = true
@@ -39,8 +42,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       })()
     const { data: subscription } = auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      auth.getUser().then(res => {
+        const user = res.data.user
+        setUserData(user)
+      })
+
       if (_event === 'SIGNED_OUT') {
         setSession(null)
+        setUserData(null)
       }
     })
     return () => {
@@ -49,13 +58,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
-  const exposed: AuthCtx = {
-    session,
-    loading,
-    setLoading
-  }
+  // const exposed: AuthCtx = {
+  //   session,
+  //   loading,
+  //   setLoading
+  // }
 
-  return <AuthContext.Provider value={exposed}>{!loading && children}</AuthContext.Provider>
+  return <>{!loading && children}</>
 }
 
-export { useAuth, AuthProvider }
+export { AuthProvider }
