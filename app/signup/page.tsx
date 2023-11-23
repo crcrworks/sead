@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { useToast } from '@/components/ui/use-toast'
 
 import { FaGoogle } from 'react-icons/fa'
 import { FaArrowLeft } from 'react-icons/fa6'
@@ -24,7 +23,7 @@ import {
 } from '@/components/ui/form'
 
 import supabase from '@/lib/utils/supabase'
-import { getURL } from 'next/dist/shared/lib/utils'
+import { useAuth } from '@/hooks/useAuth'
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -33,12 +32,11 @@ const formSchema = z.object({
 })
 
 const ProfileCard = () => {
-  const { toast } = useToast()
   const router = useRouter()
+  const { signUp, signInWithOauth, isLoading } = useAuth()
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,35 +57,11 @@ const ProfileCard = () => {
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     if (password !== confirmPassword) return
-    setIsLoading(true)
-    const { data, error } = await supabase.auth.signUp({
-      email: values.email,
-      password: password,
-      options: {
-        emailRedirectTo: getURL()
-      }
-    })
-    setIsLoading(false)
-
-    if (error) {
-      toast({
-        description: error.message
-      })
-    } else {
-      toast({
-        title: 'Account has been created successflly',
-        description: 'Please confirm your email'
-      })
-    }
+    await signUp({ email: values.email, password })
   }
 
-  const handleClickGoogle = () => {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: getURL()
-      }
-    })
+  const handleClickGoogle = async () => {
+    await signInWithOauth('google')
   }
 
   const PasswordMismatch = () => {
