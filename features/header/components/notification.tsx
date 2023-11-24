@@ -21,7 +21,7 @@ export const Notification = () => {
       <PopoverContent className="mr-2">
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-            <AccordionTrigger>Sead Beta Started</AccordionTrigger>
+            <AccordionTrigger>Sead development has started</AccordionTrigger>
             <AccordionContent>Sead, for changing seat easily</AccordionContent>
           </AccordionItem>
         </Accordion>
