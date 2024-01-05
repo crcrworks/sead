@@ -1,5 +1,5 @@
 module.exports = {
-  darkMode: ['class'],
+  darkMode: ['class', '[data-mode="light"]'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -21,7 +21,7 @@ module.exports = {
       colors: {
         border: 'var(--border)',
         input: 'var(--input)',
-        ring: 'hsl(var(--ring))',
+        ring: 'var(--ring)',
         background: 'var(--background)',
         foreground: 'var(--foreground)',
         primary: {
@@ -33,12 +33,12 @@ module.exports = {
           foreground: 'var(--secondary-foreground)'
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))'
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)'
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))'
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)'
         },
         accent: {
           DEFAULT: 'var(--accent)',

@@ -19,14 +19,14 @@
     --secondary: #EDC337;
     --secondary-foreground: #171A1B;
  
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+    --muted: rgba(23,26,27,0.2);
+    --muted-foreground: #171A1B;
  
     --accent: #EDC337;
     --accent-foreground: #171A1B;
  
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive: #FF6641;
+    --destructive-foreground: #EDEADC;
 
     --border: #171A1B;
     --input: #171A1B;

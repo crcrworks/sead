@@ -7,7 +7,7 @@ export default function Home() {
       <div className="flex h-screen w-screen flex-col items-center justify-center space-y-8">
         <p className="text-8xl font-bold">Sead</p>
         <Button asChild>
-          <Link href="/signup">Start</Link>
+          <Link href="/home">Start</Link>
         </Button>
       </div>
     </main>

@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   const router = useRouter()
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       if (!session && !loading) {
         router.push('/login')
         return
